@@ -24,6 +24,7 @@ go run main.go <flags>
 
 #### Usage :clipboard:
 `-r || --root` specifies the root directory
+
 `-e || --exclude` specifies folders to ignore
 
 `$ eyeball -r ./directory`
@@ -37,5 +38,5 @@ By default, eyeball ignores certain folders [.git, .vscode]. Use the -e || --exc
 
 #### TODO :construction:
 * sorting output
-* grouping files with same extension
+* grouping files by extension
 * more stats
