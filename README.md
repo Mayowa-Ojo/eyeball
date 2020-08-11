@@ -16,6 +16,8 @@ $ git clone https://github.com/Mayowa-Ojo/eyeball
 $ cd eyeball
 $ go build
 ```
+> add eyeball to your $PATH
+
 or run 
 ```shell
 go run main.go <flags>
@@ -27,9 +29,9 @@ go run main.go <flags>
 
 `-e || --exclude` specifies folders to ignore
 
-`$ eyeball -r ./directory`
+`$ eyeball [-r ./directory`]
 
-`$ eyeball -r ./directory -e .idea`
+`$ eyeball [-r ./directory] [-e .idea]`
 
 #### Excluding Folders :bomb:
 By default, eyeball ignores certain folders [.git, .vscode]. Use the -e || --exclude flag to specify folders to ignore. Separate multiple folders with a comma ','
