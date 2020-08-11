@@ -1,4 +1,4 @@
-module github.com/eyeball
+module github.com/Mayowa-Ojo/eyeball
 
 go 1.13
 
