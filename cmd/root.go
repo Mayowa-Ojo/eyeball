@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/Mayowa-Ojo/eyeball/utils"
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -21,13 +23,19 @@ var (
 				Eyeball is inspired by tokei (a rust project). Full documentation can be
 				found here https://github.com/Mayowa-Ojo/eyeball`,
 		Run: func(cmd *cobra.Command, args []string) {
-			// Do Stuff Here
+			s := spinner.New(spinner.CharSets[33], 40*time.Millisecond)
+
+			s.Prefix = "Traversing..."
+			s.Start()
+
 			stats, err := utils.WalkDirectories(stats, rootDir, excludeDir)
 			if err != nil {
 				log.Fatal(err)
 			}
 
 			table := utils.GenerateTable(stats)
+			time.Sleep(time.Second)
+			s.Stop()
 
 			fmt.Println(table.String())
 		},
@@ -43,6 +51,7 @@ func Execute() {
 }
 
 func init() {
+	// register flags
 	rootCmd.PersistentFlags().StringVarP(&rootDir, "root", "r", "", "Project root directory relative to current path (default is '.')")
 	rootCmd.PersistentFlags().StringSliceVarP(&excludeDir, "exclude", "e", []string{}, "Directories to exlude from stats")
 }
