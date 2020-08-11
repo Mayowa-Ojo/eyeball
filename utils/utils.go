@@ -13,13 +13,13 @@ import (
 // Stat - defines the stats for each file
 type Stat struct {
 	name          string
-	size          int64
+	size          float64
 	NumberOfLines int
 }
 
 var (
 	// Stats - total stats for given directory
-	ignoreDir = []string{
+	defaultExcludeDir = []string{
 		".git",
 		".idea",
 		".vscode",
@@ -46,7 +46,7 @@ func getNumberOfLines(filename string) int {
 // GenerateTable - builds a table from given stats
 func GenerateTable(stats []*Stat) *simpletable.Table {
 	table := simpletable.New()
-	totalFileSize := int64(0)
+	totalFileSize := float64(0)
 	totalNumberOfFiles := 0
 	totalNumberOfLines := 0
 
@@ -62,13 +62,13 @@ func GenerateTable(stats []*Stat) *simpletable.Table {
 	for i, stat := range stats {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", i)},
-			{Align: simpletable.AlignRight, Text: stat.name},
-			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", stat.size)},
+			{Align: simpletable.AlignLeft, Text: stat.name},
+			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%.2f", float64(stat.size/1000))},
 			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", stat.NumberOfLines)},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
-		totalFileSize += stat.size
+		totalFileSize += float64(stat.size / 1000)
 		totalNumberOfFiles++
 		totalNumberOfLines += stat.NumberOfLines
 	}
@@ -77,7 +77,7 @@ func GenerateTable(stats []*Stat) *simpletable.Table {
 		Cells: []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", totalNumberOfFiles)},
 			{},
-			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", totalFileSize)},
+			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%.2f", totalFileSize)},
 			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", totalNumberOfLines)},
 		},
 	}
@@ -89,18 +89,22 @@ func GenerateTable(stats []*Stat) *simpletable.Table {
 
 // WalkDirectories - recurrsively traverses specified directory to get each file
 func WalkDirectories(stats []*Stat, root string, excludeDir []string) ([]*Stat, error) {
+	if root == "" {
+		root = "."
+	}
+
 	err := filepath.Walk(root, func(path string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if fileInfo.IsDir() && fileInfo.Name() == ".git" { //TODO: handle ignored directories
+		if fileInfo.IsDir() && (contains(excludeDir, fileInfo.Name()) || contains(defaultExcludeDir, fileInfo.Name())) {
 			return filepath.SkipDir
 		}
 
 		if !fileInfo.IsDir() {
 			n := getNumberOfLines(path)
-			stats = append(stats, &Stat{fileInfo.Name(), fileInfo.Size(), n})
+			stats = append(stats, &Stat{fileInfo.Name(), float64(fileInfo.Size()), n})
 		}
 
 		return nil
@@ -111,4 +115,14 @@ func WalkDirectories(stats []*Stat, root string, excludeDir []string) ([]*Stat, 
 	}
 
 	return stats, nil
+}
+
+func contains(s []string, item string) bool {
+	for _, el := range s {
+		if el == item {
+			return true
+		}
+	}
+
+	return false
 }
