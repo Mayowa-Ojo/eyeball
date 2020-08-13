@@ -39,6 +39,6 @@ By default, eyeball ignores certain folders [.git, .vscode]. Use the -e || --exc
 `$ eyeball -r ./ -e folder1,folder2,folder3`
 
 #### TODO :construction:
-* sorting output
-* grouping files by extension
-* more stats
+[] Sorting output
+[] Grouping files by extension
+[] More stats...
